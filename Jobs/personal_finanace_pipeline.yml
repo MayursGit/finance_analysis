@@ -14,19 +14,19 @@ resources:
       tasks:
         - task_key: bronze_ingestion
           notebook_task:
-            notebook_path: /Workspace/Users/mayur10594@gmail.com/FINANCE/01_bronze_transactions
+            notebook_path: ../Notebooks/01_bronze_transactions
             source: WORKSPACE
         - task_key: silver_transformations
           depends_on:
             - task_key: bronze_ingestion
           notebook_task:
-            notebook_path: /Workspace/Users/mayur10594@gmail.com/FINANCE/02_silver_transactions
+            notebook_path: ../Notebooks/02_silver_transactions
             source: WORKSPACE
         - task_key: gold_transformations
           depends_on:
             - task_key: silver_transformations
           notebook_task:
-            notebook_path: /Workspace/Users/mayur10594@gmail.com/FINANCE/03_gold_finance_analysis
+            notebook_path: ../Notebooks/03_gold_finance_analysis
             source: WORKSPACE
       queue:
         enabled: true
