@@ -1,0 +1,1403 @@
+{
+  "datasets": [
+    {
+      "name": "4b06851a",
+      "displayName": "Monthly Summary",
+      "queryLines": [
+        "SELECT\r\n",
+        "    month_date,\r\n",
+        "    month,\r\n",
+        "    year,\r\n",
+        "    total_income,\r\n",
+        "    total_expense,\r\n",
+        "    savings,\r\n",
+        "    savings_percentage,\r\n",
+        "    income_transaction_count,\r\n",
+        "    expense_transaction_count,\r\n",
+        "    average_expense\r\n",
+        "FROM personal.finance.gold_monthly_summary\r\n",
+        "ORDER BY month_date"
+      ],
+      "columns": [
+        {
+          "displayName": "Savings Rate",
+          "description": "",
+          "expression": "try_divide(SUM(savings), SUM(total_income))"
+        }
+      ]
+    },
+    {
+      "name": "811353cd",
+      "displayName": "Overall KPIs",
+      "queryLines": [
+        "SELECT\r\n",
+        "    SUM(total_income) AS total_income,\r\n",
+        "    SUM(total_expense) AS total_expense,\r\n",
+        "    SUM(savings) AS total_savings,\r\n",
+        "    ROUND(\r\n",
+        "        SUM(savings) / NULLIF(SUM(total_income), 0),\r\n",
+        "        4\r\n",
+        "    ) AS savings_rate\r\n",
+        "FROM personal.finance.gold_monthly_summary"
+      ]
+    },
+    {
+      "name": "a8d9fddb",
+      "displayName": "gold_category_overall",
+      "config": {
+        "version": "1.1",
+        "source": "personal.finance.gold_category_overall",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "d30f93ba",
+      "displayName": "Top 5 Expense Categories",
+      "queryLines": [
+        "WITH ranked AS (\r\n",
+        "\r\n",
+        "    SELECT\r\n",
+        "        year,\r\n",
+        "        category,\r\n",
+        "        total_expense,\r\n",
+        "\r\n",
+        "        ROW_NUMBER() OVER (\r\n",
+        "            PARTITION BY year\r\n",
+        "            ORDER BY total_expense DESC\r\n",
+        "        ) AS rank\r\n",
+        "\r\n",
+        "    FROM personal.finance.gold_category_yearly\r\n",
+        ")\r\n",
+        "\r\n",
+        "SELECT\r\n",
+        "    year,\r\n",
+        "    category,\r\n",
+        "    total_expense\r\n",
+        "\r\n",
+        "FROM ranked\r\n",
+        "\r\n",
+        "WHERE rank <= 5\r\n",
+        "\r\n",
+        "ORDER BY\r\n",
+        "    year,\r\n",
+        "    total_expense DESC"
+      ]
+    },
+    {
+      "name": "9a7d7ee9",
+      "displayName": "gold_category_yearly",
+      "config": {
+        "version": "1.1",
+        "source": "personal.finance.gold_category_yearly",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "7d21dc18",
+      "displayName": "gold_vw_last_month_top5_category",
+      "config": {
+        "version": "1.1",
+        "source": "personal.finance.gold_vw_last_month_top5_category",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "b8a2faf2",
+      "displayName": "gold_vw_last_month_summary",
+      "config": {
+        "version": "1.1",
+        "source": "personal.finance.gold_vw_last_month_summary",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          },
+          {
+            "name": "savings_rate_measure",
+            "expr": "try_divide(SUM(savings), SUM(total_income))",
+            "displayName": "Savings Rate Measure"
+          }
+        ]
+      }
+    },
+    {
+      "name": "b5a3a000",
+      "displayName": "gold_vw_last_month_transactions",
+      "config": {
+        "version": "1.1",
+        "source": "personal.finance.gold_vw_last_month_transactions",
+        "dimensions": [
+          {
+            "name": "transaction_date",
+            "expr": "transaction_date"
+          },
+          {
+            "name": "amount",
+            "expr": "amount"
+          },
+          {
+            "name": "description",
+            "expr": "description"
+          },
+          {
+            "name": "category",
+            "expr": "category"
+          },
+          {
+            "name": "remark",
+            "expr": "remark"
+          },
+          {
+            "name": "year",
+            "expr": "year"
+          },
+          {
+            "name": "month",
+            "expr": "month"
+          },
+          {
+            "name": "month_date",
+            "expr": "month_date"
+          },
+          {
+            "name": "transaction_type",
+            "expr": "transaction_type"
+          },
+          {
+            "name": "source_column",
+            "expr": "`source`"
+          },
+          {
+            "name": "ingestion_timestamp",
+            "expr": "ingestion_timestamp"
+          },
+          {
+            "name": "silver_processed_timestamp",
+            "expr": "silver_processed_timestamp"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "b305a2c9",
+      "displayName": "gold_vw_last_month_category",
+      "config": {
+        "version": "1.1",
+        "source": "personal.finance.gold_vw_last_month_category",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    }
+  ],
+  "pages": [
+    {
+      "name": "ed4cf5ef",
+      "displayName": "Global Filters",
+      "layout": [
+        {
+          "widget": {
+            "name": "year",
+            "queries": [
+              {
+                "name": "dashboards/01f195903d5e10cfbeaf0f16c76745e0/datasets/01f1959056a7147faf4b993d4b5dc7ff_year",
+                "query": {
+                  "datasetName": "4b06851a",
+                  "fields": [
+                    {
+                      "name": "year",
+                      "expression": "`year`"
+                    },
+                    {
+                      "name": "year_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "dashboards/01f195903d5e10cfbeaf0f16c76745e0/datasets/01f195980c9a1b2aaa83e481f90a97e8_year",
+                "query": {
+                  "datasetName": "d30f93ba",
+                  "fields": [
+                    {
+                      "name": "year",
+                      "expression": "`year`"
+                    },
+                    {
+                      "name": "year_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "dashboards/01f195903d5e10cfbeaf0f16c76745e0/datasets/01f1959f386918f39a198a14078788b8_year",
+                "query": {
+                  "datasetName": "9a7d7ee9",
+                  "fields": [
+                    {
+                      "name": "year",
+                      "expression": "`year`"
+                    },
+                    {
+                      "name": "year_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Year"
+              },
+              "disallowAll": false,
+              "selection": {
+                "defaultSelection": {
+                  "values": {
+                    "dataType": "INTEGER",
+                    "values": [
+                      {
+                        "value": "2026"
+                      }
+                    ]
+                  }
+                }
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "year",
+                    "queryName": "dashboards/01f195903d5e10cfbeaf0f16c76745e0/datasets/01f1959056a7147faf4b993d4b5dc7ff_year"
+                  },
+                  {
+                    "fieldName": "year",
+                    "queryName": "dashboards/01f195903d5e10cfbeaf0f16c76745e0/datasets/01f195980c9a1b2aaa83e481f90a97e8_year"
+                  },
+                  {
+                    "fieldName": "year",
+                    "queryName": "dashboards/01f195903d5e10cfbeaf0f16c76745e0/datasets/01f1959f386918f39a198a14078788b8_year"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 1,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_GLOBAL_FILTERS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "b31536f9",
+      "displayName": "Current Year Analysis",
+      "layout": [
+        {
+          "widget": {
+            "name": "t",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "4b06851a",
+                  "fields": [
+                    {
+                      "name": "sum(total_income)",
+                      "expression": "SUM(`total_income`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Current Year Income",
+                "showDescription": false
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(total_income)",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "INR",
+                    "abbreviation": "none",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    }
+                  },
+                  "style": {
+                    "fontSize": 20
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 0,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "b4f448a0",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "4b06851a",
+                  "fields": [
+                    {
+                      "name": "sum(total_expense)",
+                      "expression": "SUM(`total_expense`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Current Year Expense",
+                "showDescription": false
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(total_expense)",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "INR",
+                    "abbreviation": "none",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    }
+                  },
+                  "style": {
+                    "fontSize": 20
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 0,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "4cedbd9b",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "4b06851a",
+                  "fields": [
+                    {
+                      "name": "sum(savings)",
+                      "expression": "SUM(`savings`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Current Year Savings",
+                "showDescription": false
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(savings)",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "INR",
+                    "abbreviation": "none",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    }
+                  },
+                  "style": {
+                    "fontSize": 20
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 0,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "0525c48a",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "4b06851a",
+                  "fields": [
+                    {
+                      "name": "measure(Savings Rate)",
+                      "expression": "MEASURE(`Savings Rate`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Savings rate",
+                "showDescription": false
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(Savings Rate)",
+                  "format": {
+                    "type": "number-percent",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    }
+                  },
+                  "style": {
+                    "fontSize": 20
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 0,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "income-vs-expense-vs-savings",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "4b06851a",
+                  "fields": [
+                    {
+                      "name": "monthly(month_date)",
+                      "expression": "DATE_TRUNC(\"MONTH\", `month_date`)"
+                    },
+                    {
+                      "name": "sum(total_income)",
+                      "expression": "SUM(`total_income`)"
+                    },
+                    {
+                      "name": "sum(total_expense)",
+                      "expression": "SUM(`total_expense`)"
+                    },
+                    {
+                      "name": "sum(savings)",
+                      "expression": "SUM(`savings`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Income vs Expense vs Savings"
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "monthly(month_date)",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "fields": [
+                    {
+                      "fieldName": "sum(total_income)"
+                    },
+                    {
+                      "fieldName": "sum(total_expense)"
+                    },
+                    {
+                      "fieldName": "sum(savings)"
+                    }
+                  ]
+                },
+                "label": {
+                  "show": false
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 2,
+            "width": 8,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "monthly-expense-trend",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "4b06851a",
+                  "fields": [
+                    {
+                      "name": "monthly(month_date)",
+                      "expression": "DATE_TRUNC(\"MONTH\", `month_date`)"
+                    },
+                    {
+                      "name": "sum(total_expense)",
+                      "expression": "SUM(`total_expense`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Monthly Expense Trend"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "monthly(month_date)",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(total_expense)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 13,
+            "width": 4,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "expense-by-category",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "9a7d7ee9",
+                  "fields": [
+                    {
+                      "name": "total_expense",
+                      "expression": "`total_expense`"
+                    },
+                    {
+                      "name": "category",
+                      "expression": "`category`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Expense by Category"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "total_expense",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    }
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "category",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x-reversed"
+                    }
+                  }
+                },
+                "label": {
+                  "show": false
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 8,
+            "width": 4,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "top-5-categories",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "d30f93ba",
+                  "fields": [
+                    {
+                      "name": "sum(total_expense)",
+                      "expression": "SUM(`total_expense`)"
+                    },
+                    {
+                      "name": "category",
+                      "expression": "`category`"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "IN_RANGE(`year`, NULL, NULL)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Top 5 Categories"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "sum(total_expense)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "category",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x-reversed"
+                    }
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 8,
+            "width": 4,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "monthly-savings",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "4b06851a",
+                  "fields": [
+                    {
+                      "name": "monthly(month_date)",
+                      "expression": "DATE_TRUNC(\"MONTH\", `month_date`)"
+                    },
+                    {
+                      "name": "sum(savings)",
+                      "expression": "SUM(`savings`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Monthly Savings"
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "monthly(month_date)",
+                  "axis": {
+                    "title": "Months"
+                  },
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(savings)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 13,
+            "width": 4,
+            "height": 5
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "f9801009",
+      "displayName": "Current Month Analysis",
+      "layout": [
+        {
+          "widget": {
+            "name": "eb93ed7e",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "4b06851a",
+                  "fields": [
+                    {
+                      "name": "monthly(month_date)",
+                      "expression": "DATE_TRUNC(\"MONTH\", `month_date`)"
+                    },
+                    {
+                      "name": "sum(total_expense)",
+                      "expression": "SUM(`total_expense`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Monthly Expense Trend"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "monthly(month_date)",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(total_expense)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 7,
+            "width": 4,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "11c35f55",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "7d21dc18",
+                  "fields": [
+                    {
+                      "name": "sum(total_expense)",
+                      "expression": "SUM(`total_expense`)"
+                    },
+                    {
+                      "name": "category",
+                      "expression": "`category`"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "`category` IN (`category`) OR TRUE"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Top 5 Categories"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "sum(total_expense)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "category",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x-reversed"
+                    }
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 4,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "61264164",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "b8a2faf2",
+                  "fields": [
+                    {
+                      "name": "sum(savings)",
+                      "expression": "SUM(`savings`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Current Month Savings",
+                "showDescription": false
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(savings)",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "INR",
+                    "abbreviation": "none",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    }
+                  },
+                  "style": {
+                    "fontSize": 20
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 0,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "af999a03",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "4b06851a",
+                  "fields": [
+                    {
+                      "name": "monthly(month_date)",
+                      "expression": "DATE_TRUNC(\"MONTH\", `month_date`)"
+                    },
+                    {
+                      "name": "sum(savings)",
+                      "expression": "SUM(`savings`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Monthly Savings"
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "monthly(month_date)",
+                  "axis": {
+                    "title": "Months"
+                  },
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(savings)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 7,
+            "width": 4,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "eee85a3f",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "b305a2c9",
+                  "fields": [
+                    {
+                      "name": "total_expense",
+                      "expression": "`total_expense`"
+                    },
+                    {
+                      "name": "category",
+                      "expression": "`category`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Expense by Category"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "total_expense",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    }
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "category",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x-reversed"
+                    }
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 2,
+            "width": 4,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "0398fcfe",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "b8a2faf2",
+                  "fields": [
+                    {
+                      "name": "sum(total_income)",
+                      "expression": "SUM(`total_income`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Current Month Income",
+                "showDescription": false
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(total_income)",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "INR",
+                    "abbreviation": "none",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    }
+                  },
+                  "style": {
+                    "fontSize": 20
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 0,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "4a2a9fee",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "b8a2faf2",
+                  "fields": [
+                    {
+                      "name": "measure(savings_rate_measure)",
+                      "expression": "MEASURE(`savings_rate_measure`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Savings rate",
+                "showDescription": false
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(savings_rate_measure)",
+                  "style": {
+                    "fontSize": 20
+                  },
+                  "format": {
+                    "type": "number-percent",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    }
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 0,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "f9d3b77b",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "b8a2faf2",
+                  "fields": [
+                    {
+                      "name": "sum(total_expense)",
+                      "expression": "SUM(`total_expense`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Current Month Expense",
+                "showDescription": false
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(total_expense)",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "INR",
+                    "abbreviation": "none",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    }
+                  },
+                  "style": {
+                    "fontSize": 20
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 0,
+            "width": 2,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}
