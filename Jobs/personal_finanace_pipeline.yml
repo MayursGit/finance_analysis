@@ -14,23 +14,34 @@ resources:
       tasks:
         - task_key: bronze_ingestion
           notebook_task:
-            notebook_path: ../Notebooks/01_bronze_transactions.ipynb
+            notebook_path: /Workspace/Users/87c0f4a5-c7b8-4dfe-b672-97291e46a675/.bundle/FINANACE/files/Notebooks/01_bronze_transactions
             source: WORKSPACE
         - task_key: silver_transformations
           depends_on:
             - task_key: bronze_ingestion
           notebook_task:
-            notebook_path: ../Notebooks/02_silver_transactions.ipynb
+            notebook_path: /Workspace/Users/87c0f4a5-c7b8-4dfe-b672-97291e46a675/.bundle/FINANACE/files/Notebooks/02_silver_transactions
             source: WORKSPACE
         - task_key: gold_transformations
           depends_on:
             - task_key: silver_transformations
           notebook_task:
-            notebook_path: ../Notebooks/03_gold_finance_analysis.ipynb
+            notebook_path: /Workspace/Users/87c0f4a5-c7b8-4dfe-b672-97291e46a675/.bundle/FINANACE/files/Notebooks/03_gold_finance_analysis
             source: WORKSPACE
+        - task_key: gold_monthly_transformations
+          depends_on:
+            - task_key: gold_transformations
+          notebook_task:
+            notebook_path: /Workspace/Users/87c0f4a5-c7b8-4dfe-b672-97291e46a675/.bundle/FINANACE/files/Notebooks/04_gold_monthly_finance_analysis
+            source: WORKSPACE
+          environment_key: Default
       queue:
         enabled: true
       parameters:
         - name: load_type
           default: incremental_load
+      environments:
+        - environment_key: Default
+          spec:
+            environment_version: "5"
       performance_target: PERFORMANCE_OPTIMIZED

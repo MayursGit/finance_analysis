@@ -1,6 +1,6 @@
 
 bundle:
-  name: FINANACE
+  name: FINANCE
 
 include:
   - Jobs/personal_finanace_pipeline.yml
@@ -11,11 +11,11 @@ permissions:
 
 targets:
   dev:
-    mode: development
+    mode: production
     default: true
     workspace:
       host: https://dbc-0edfa32f-04b9.cloud.databricks.com/browse/folders/workspace?o=3435589456319866
-      root_path: /Workspace/Users/87c0f4a5-c7b8-4dfe-b672-97291e46a675/.bundle/${bundle.name}
+      root_path: /Users/87c0f4a5-c7b8-4dfe-b672-97291e46a675/.bundle/${bundle.name}
 
   qa:
     default: false 
