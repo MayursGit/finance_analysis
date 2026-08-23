@@ -1,9 +1,14 @@
-
 bundle:
   name: FINANCE
 
 include:
   - Jobs/personal_finanace_pipeline.yml
+  - Dashboards/*.yml
+
+variables:
+  warehouse_id:
+    description: "SQL Warehouse ID"
+    default: "5cc9dcededdd5384"
   
 permissions:
   - group_name: users

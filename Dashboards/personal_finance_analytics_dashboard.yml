@@ -1,0 +1,6 @@
+resources:
+  dashboards:
+    personal_finance_analytics:
+      display_name: "Personal Finance Analytics Dashboard"
+      file_path: ./Personal Finance Analytics Dashboard.lvdash.json
+      warehouse_id: ${var.warehouse_id}
