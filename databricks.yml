@@ -9,27 +9,27 @@ variables:
   warehouse_id:
     description: "SQL Warehouse ID"
     default: "5cc9dcededdd5384"
-  
+
 permissions:
   - group_name: users
     level: CAN_MANAGE
 
 targets:
+
   dev:
     mode: development
     default: true
     workspace:
-      host: https://dbc-0edfa32f-04b9.cloud.databricks.com/browse/folders/workspace?o=3435589456319866
-      root_path: /Users/87c0f4a5-c7b8-4dfe-b672-97291e46a675/.bundle/${bundle.name}
-  
+      host: https://dbc-0edfa32f-04b9.cloud.databricks.com
+      root_path: /Users/${workspace.current_user.userName}/.bundle/${bundle.name}
+
+  qa:
+    workspace:
+      host: https://dbc-0edfa32f-04b9.cloud.databricks.com
+      root_path: /Users/${workspace.current_user.userName}/.bundle/${bundle.name}
+
   prod:
     mode: production
-    default: true
     workspace:
-      host: https://dbc-0edfa32f-04b9.cloud.databricks.com/browse/folders/workspace?o=3435589456319866
-      root_path: /Users/87c0f4a5-c7b8-4dfe-b672-97291e46a675/.bundle/${bundle.name}
-  
-  qa:
-    default: false 
-    workspace:
-      host: https://dbc-0edfa32f-04b9.cloud.databricks.com/browse/folders/workspace?o=3435589456319866
+      host: https://dbc-0edfa32f-04b9.cloud.databricks.com
+      root_path: /Users/${workspace.current_user.userName}/.bundle/${bundle.name}
