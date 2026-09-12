@@ -52,7 +52,7 @@ jobs:
       #     pytest tests || true
 
       - name: Deploy Bundle
-        run: databricks bundle deploy -t dev
+        run: databricks bundle deploy -t prod
         env:
           DATABRICKS_HOST: ${{ secrets.host }}
           DATABRICKS_CLIENT_ID: ${{ secrets.client_id }}
